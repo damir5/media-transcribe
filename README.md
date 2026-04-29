@@ -11,3 +11,11 @@ Local transcript extraction for YouTube and audio sources.
 ```
 
 The CLI emits normalized transcript JSON and stores audio/transcript artifacts in `--out-dir`.
+
+## Install
+
+```bash
+ln -sf "$(pwd)/media-transcribe" ~/.local/bin/media-transcribe
+```
+
+The wrapper resolves its real location, so it works both from this directory and through a symlink.
