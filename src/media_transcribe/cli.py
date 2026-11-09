@@ -35,7 +35,7 @@ def json_print(payload: dict) -> None:
 
 
 def handle_captions_youtube(source: str, out_dir: Path) -> int:
-    text, meta = fetch_youtube_captions(source, out_dir)
+    text, meta, segments = fetch_youtube_captions(source, out_dir)
     payload = {
         "source": source,
         "sourceType": "youtube",
@@ -43,7 +43,7 @@ def handle_captions_youtube(source: str, out_dir: Path) -> int:
         "language": "en",
         "durationSeconds": meta.get("duration"),
         "text": text,
-        "segments": [],
+        "segments": segments,
         "method": "youtube-captions" if text else "none",
     }
     json_print(payload)
@@ -59,7 +59,7 @@ def handle_transcribe(source: str, out_dir: Path, model: str) -> int:
 
     if is_youtube_url(source):
         source_type = "youtube"
-        text, meta = fetch_youtube_captions(source, out_dir / "captions")
+        text, meta, segments = fetch_youtube_captions(source, out_dir / "captions")
         title = meta.get("title")
         if text:
             payload = {
@@ -69,7 +69,7 @@ def handle_transcribe(source: str, out_dir: Path, model: str) -> int:
                 "language": "en",
                 "durationSeconds": meta.get("duration"),
                 "text": text,
-                "segments": [],
+                "segments": segments,
                 "method": "youtube-captions",
                 "artifacts": {},
             }

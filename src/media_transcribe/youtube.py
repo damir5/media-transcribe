@@ -4,10 +4,12 @@ import json
 import subprocess
 from pathlib import Path
 
-from .normalize import normalize_srt_text
+from .normalize import normalize_srt_text, parse_srt_segments
 
 
-def fetch_youtube_captions(url: str, out_dir: Path) -> tuple[str | None, dict]:
+def fetch_youtube_captions(
+    url: str, out_dir: Path
+) -> tuple[str | None, dict, list[dict]]:
     out_dir.mkdir(parents=True, exist_ok=True)
     meta_raw = subprocess.run(
         ["yt-dlp", "--dump-json", "--no-playlist", url],
@@ -39,9 +41,10 @@ def fetch_youtube_captions(url: str, out_dir: Path) -> tuple[str | None, dict]:
 
     srt_files = sorted(out_dir.glob("*.srt"))
     if not srt_files:
-        return None, meta
+        return None, meta, []
 
-    text = normalize_srt_text(srt_files[0].read_text(encoding="utf-8"))
+    raw = srt_files[0].read_text(encoding="utf-8")
+    text = normalize_srt_text(raw)
     if len(text) < 80:
-        return None, meta
-    return text, meta
+        return None, meta, []
+    return text, meta, parse_srt_segments(raw)
